@@ -1,8 +1,8 @@
 package com.example.loader.services.implementation;
 
 import com.example.loader.clients.GoogleApiClient;
-import com.example.loader.dto.Book;
-import com.example.loader.dto.User;
+import com.example.loader.models.Book;
+import com.example.loader.models.User;
 import com.example.loader.services.IDataDownloadService;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.Sheet;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +33,12 @@ public class GoogleSheetsDataDownloadService implements IDataDownloadService {
 
         List<Sheet> sheets = getSheets(sheetsService);
 
-        return sheets.stream()
+        List<User> users = sheets.stream()
                 .map(sheet -> mapSheetToUser(sheetsService, sheet))
-                .collect(Collectors.toList());
+                .toList();
+
+        log.info("Data for {} users has been downloaded from Google Sheets", users.size());
+        return users;
     }
 
     private List<Sheet> getSheets(Sheets sheetsService) {

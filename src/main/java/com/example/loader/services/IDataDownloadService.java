@@ -1,6 +1,6 @@
 package com.example.loader.services;
 
-import com.example.loader.dto.User;
+import com.example.loader.models.User;
 
 import java.util.List;
 
