@@ -1,76 +1,42 @@
 package com.example.loader.services.implementation;
 
+import com.example.loader.clients.GoogleApiClient;
 import com.example.loader.dto.Book;
 import com.example.loader.dto.User;
 import com.example.loader.services.IDataDownloadService;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class GoogleSheetsDataDownloadService implements IDataDownloadService {
     @Value("${google.sheets.spreadsheet.id}")
     private String SPREADSHEET_ID;
 
-    @Value("${google.service.account.credentials.path}")
-    private String CREDENTIALS_FILE_PATH;
+    private final GoogleApiClient googleApiClient;
+
 
     @Override
     public List<User> downloadUsers() {
-        Sheets sheetsService = buildSheetsService();
+        Sheets sheetsService = googleApiClient.buildSheetsService();
 
         List<Sheet> sheets = getSheets(sheetsService);
 
-        List<User> users = new ArrayList<>();
-        // Loop through each sheet and fetch data
-        for (Sheet sheet : sheets) {
-            User user = mapSheetToUser(sheetsService, sheet);
-            users.add(user);
-        }
-
-        return users;
-    }
-
-    private Sheets buildSheetsService() {
-        GoogleCredentials credentials = loadCredentials();
-
-        try {
-            return new Sheets.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    GsonFactory.getDefaultInstance(),
-                    new HttpCredentialsAdapter(credentials))
-                    .setApplicationName("Google Sheets API Downloader")
-                    .build();
-        } catch (GeneralSecurityException | IOException e) {
-            log.error("Failed to build Sheets service", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    private GoogleCredentials loadCredentials() {
-        try {
-            return GoogleCredentials.fromStream(new FileInputStream(CREDENTIALS_FILE_PATH))
-                    .createScoped("https://www.googleapis.com/auth/spreadsheets.readonly");
-        } catch (IOException e) {
-            log.error("Failed to load credentials", e);
-            throw new RuntimeException(e);
-        }
+        return sheets.stream()
+                .map(sheet -> mapSheetToUser(sheetsService, sheet))
+                .collect(Collectors.toList());
     }
 
     private List<Sheet> getSheets(Sheets sheetsService) {
