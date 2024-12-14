@@ -35,4 +35,4 @@ build/
 .env
 keys.json
 
-tmp/
+tmp
