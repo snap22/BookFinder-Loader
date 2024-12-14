@@ -64,6 +64,22 @@
             <version>1.30.0</version>
         </dependency>
 
+        <!-- GitHub API -->
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
+            <version>1.326</version>
+        </dependency>
+
+        <!-- Templating -->
+        <dependency>
+            <groupId>com.github.spullara.mustache.java</groupId>
+            <artifactId>compiler</artifactId>
+            <version>0.9.10</version>
+        </dependency>
+
+
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
