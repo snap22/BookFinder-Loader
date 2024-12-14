@@ -14,16 +14,21 @@ public class TemplateProcessor {
 
     private final MustacheFactory mf = new DefaultMustacheFactory();
 
+    /**
+     * Processes a Mustache template by replacing placeholders with provided variables.
+     *
+     * @param templatePath the file path to the Mustache template
+     * @param variables the object containing key-value pairs for replacement
+     * @return the processed template as a string
+     * @throws IOException if the file cannot be read
+     */
     public String processTemplate(String templatePath, Object variables) throws IOException {
-        // Path to your markdown file
         Path filePath = Path.of(templatePath);
 
-        // Read file content
         String markdownContent = Files.readString(filePath);
 
         Mustache mustache = mf.compile(new StringReader(markdownContent), "template");
 
-        // Placeholder values
         StringWriter writer = new StringWriter();
         mustache.execute(writer, variables).close();
 
