@@ -5,14 +5,13 @@ import com.example.loader.dto.BookJson;
 import com.example.loader.mappers.BookMapper;
 import com.example.loader.models.User;
 import com.example.loader.services.IDataUploadService;
+import com.example.loader.utils.DotEnvHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.FileWriter;
@@ -21,13 +20,15 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class GoogleDriveDataUploadService implements IDataUploadService {
-
-    @Value("${google.drive.folder.id}")
-    private String FOLDER_ID;
-
+    private final String FOLDER_ID;
     private final GoogleApiClient googleApiClient;
+
+    public GoogleDriveDataUploadService(GoogleApiClient googleApiClient, DotEnvHolder dotEnvHolder) {
+        this.googleApiClient = googleApiClient;
+        FOLDER_ID = dotEnvHolder.getVariable("GOOGLE_DRIVE_FOLDER_ID");
+    }
+
 
     @Override
     public void uploadUsers(List<User> users) {

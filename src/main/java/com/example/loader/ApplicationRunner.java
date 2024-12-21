@@ -20,9 +20,8 @@ public class ApplicationRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-//        List<User> users = dataDownloadService.downloadUsers();
-//        dataUploadService.uploadUsers(users);
-
-        externalRepositoryService.downloadRepository();
+        List<User> users = dataDownloadService.downloadUsers();
+        dataUploadService.uploadUsers(users);
+        externalRepositoryService.setupUsers(users);
     }
 }

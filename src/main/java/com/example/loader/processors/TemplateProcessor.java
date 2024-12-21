@@ -3,6 +3,7 @@ package com.example.loader.processors;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -10,6 +11,7 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+@Component
 public class TemplateProcessor {
 
     private final MustacheFactory mf = new DefaultMustacheFactory();

@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class User {
     private String externalId; // ID from external storage system
+    private String normalizedName; // Normalized name for URL
     private String name;
     private List<Book> books;
 }

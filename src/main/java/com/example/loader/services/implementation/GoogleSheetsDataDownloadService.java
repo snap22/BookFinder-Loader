@@ -4,13 +4,13 @@ import com.example.loader.clients.GoogleApiClient;
 import com.example.loader.models.Book;
 import com.example.loader.models.User;
 import com.example.loader.services.IDataDownloadService;
+import com.example.loader.utils.DotEnvHolder;
+import com.example.loader.utils.StringUtils;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -19,12 +19,15 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class GoogleSheetsDataDownloadService implements IDataDownloadService {
-    @Value("${google.sheets.spreadsheet.id}")
-    private String SPREADSHEET_ID;
+    private final String SPREADSHEET_ID;
 
     private final GoogleApiClient googleApiClient;
+
+    public GoogleSheetsDataDownloadService(GoogleApiClient googleApiClient, DotEnvHolder dotEnvHolder) {
+        this.googleApiClient = googleApiClient;
+        SPREADSHEET_ID = dotEnvHolder.getVariable("GOOGLE_SHEETS_SPREADSHEET_ID");
+    }
 
 
     @Override
@@ -75,6 +78,7 @@ public class GoogleSheetsDataDownloadService implements IDataDownloadService {
 
             return User.builder()
                     .name(sheetName)
+                    .normalizedName(StringUtils.normalizeString(sheetName))
                     .books(books)
                     .build();
 
