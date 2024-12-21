@@ -1,0 +1,48 @@
+name: Run Loader
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  run-spring-boot:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Decode Base64 secret and create keys.json file
+      - name: Create keys.json from secret
+        env:
+          BASE64_KEY: ${{ secrets.GOOGLE_SECRET_KEY }}
+        run: |
+          echo "$BASE64_KEY" | base64 --decode > keys.json
+          echo "google.service.account.credentials.path=$PWD/keys.json" >> src/main/resources/application.properties
+          echo "Google Cloud key file created and path set in application.properties"
+
+      # Step 3: Create .env file with other secrets
+      - name: Create .env file
+        run: |
+          echo "GOOGLE_DRIVE_FOLDER_ID=${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}" > .env
+          echo "GOOGLE_SHEETS_SPREADSHEET_ID=${{ secrets.GOOGLE_SHEETS_SPREADSHEET_ID }}" > .env
+          echo "GITHUB_OAUTH=${{ secrets.GIT_OAUTH }}" > .env
+          echo "GITHUB_USER=${{ secrets.GIT_USER }}" > .env
+          echo ".env file created with secrets"
+
+      # Step 4: Run the Spring Boot application
+      - name: Run Spring Boot
+        env:
+          DOTENV_CONFIG_PATH: .env
+        run: |
+          ./mvnw spring-boot:run
+
+      # Step 5: Clean up sensitive files
+      - name: Cleanup sensitive files
+        if: always()
+        run: |
+          rm -f keys.json
+          rm -f .env
+          echo "Sensitive files cleaned up"
