@@ -31,6 +31,9 @@ jobs:
           echo "GITHUB_OAUTH=${{ secrets.GIT_OAUTH }}" > .env
           echo "GITHUB_USER=${{ secrets.GIT_USER }}" > .env
           echo ".env file created with secrets"
+          echo "TEST_VAR=${{ secrets.TEST_VAR }}" > .env_test
+          cat .env_test
+      
 
       # Step 4: Run the Spring Boot application
       - name: Run Spring Boot
