@@ -20,8 +20,7 @@ jobs:
           BASE64_KEY: ${{ secrets.GOOGLE_SECRET_KEY }}
         run: |
           echo "$BASE64_KEY" | base64 --decode > keys.json
-          echo "google.service.account.credentials.path=$PWD/keys.json" >> src/main/resources/application.properties
-          echo "Google Cloud key file created and path set in application.properties"
+          
 
       # Step 3: Create .env file with other secrets
       - name: Create .env file
@@ -39,7 +38,7 @@ jobs:
         env:
           DOTENV_CONFIG_PATH: .env
         run: |
-          ./mvnw spring-boot:run
+          ./mvnw spring-boot:run -Dspring-boot.run.arguments=--google.service.account.credentials.path=$PWD/keys.json
 
       # Step 5: Clean up sensitive files
       - name: Cleanup sensitive files
