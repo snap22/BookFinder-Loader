@@ -1,11 +1,11 @@
 package com.example.loader.services.implementation;
 
 import com.example.loader.clients.GoogleApiClient;
+import com.example.loader.generators.NormalizedNameGenerator;
 import com.example.loader.models.Book;
 import com.example.loader.models.User;
 import com.example.loader.services.IDataDownloadService;
 import com.example.loader.utils.DotEnvHolder;
-import com.example.loader.utils.StringUtils;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
@@ -24,9 +24,12 @@ public class GoogleSheetsDataDownloadService implements IDataDownloadService {
 
     private final GoogleApiClient googleApiClient;
 
+    private final NormalizedNameGenerator nameGenerator;
+
     public GoogleSheetsDataDownloadService(GoogleApiClient googleApiClient, DotEnvHolder dotEnvHolder) {
         this.googleApiClient = googleApiClient;
         SPREADSHEET_ID = dotEnvHolder.getVariable("GOOGLE_SHEETS_SPREADSHEET_ID");
+        nameGenerator = new NormalizedNameGenerator();
     }
 
 
@@ -78,7 +81,7 @@ public class GoogleSheetsDataDownloadService implements IDataDownloadService {
 
             return User.builder()
                     .name(sheetName)
-                    .normalizedName(StringUtils.normalizeString(sheetName))
+                    .normalizedName(nameGenerator.generateNormalizedName(sheetName))
                     .books(books)
                     .build();
 
